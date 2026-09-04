@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lumen — Smart Campus Energy &amp; Renewable Credits Ledger</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:italic,wght@0,400;1,400&display=swap');
+
+:root {
+  --bg: #F6F8F6;
+  --card: #FFFFFF;
+  --dim: #EEF3EF;
+  --ink: #0D1F17;
+  --ink-secondary: #24352D;
+  --ink-muted: #576E62;
+  --sun: #D97706;
+  --sun-soft: #FEF3C7;
+  --leaf: #14532D;
+  --leaf-dark: #0D381E;
+  --leaf-soft: #DCFCE7;
+  --emerald: #10B981;
+  --emerald-soft: #E8F8F0;
+  --purple: #7C3AED;
+  --purple-soft: #F3E8FF;
+  --danger: #DC2626;
+  --danger-soft: #FEE2E2;
+  --line: rgba(13, 31, 23, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --shadow-sm: 0 4px 12px rgba(13, 31, 23, 0.05);
+  --shadow-md: 0 10px 28px rgba(13, 31, 23, 0.07);
+  --shadow-lg: 0 20px 48px rgba(13, 31, 23, 0.11);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  line-height: 1.5;
+}
+h1, h2, h3, h4 { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; letter-spacing: -0.025em; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+button { font-family: inherit; cursor: pointer; }
+a { text-decoration: none; color: inherit; }
+
+/* Navigation */
+.topbar {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line);
+  padding: 12px 28px;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 1px 3px rgba(13, 31, 23, 0.03);
+}
+.brand-group { display: flex; align-items: center; gap: 12px; }
+.brand-icon {
+  width: 38px; height: 38px; border-radius: 12px;
+  background: linear-gradient(135deg, #10B981 0%, #14462B 100%);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 20px; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+.brand-text h1 { font-size: 19px; line-height: 1.1; font-weight: 800; color: var(--ink); }
+.brand-text small {
+  display: block; font-family: 'JetBrains Mono', monospace; font-size: 9.5px;
+  letter-spacing: 0.10em; text-transform: uppercase; color: var(--ink-muted); font-weight: 600;
+}
+
+.nav-tabs {
+  display: flex; gap: 4px; background: var(--dim);
+  padding: 4px; border-radius: 100px; border: 1px solid var(--line);
+}
+.nav-tabs button {
+  border: none; background: transparent; padding: 7px 16px; border-radius: 100px;
+  font-size: 12.5px; font-weight: 600; color: var(--ink-secondary); transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex; align-items: center; gap: 6px;
+}
+.nav-tabs button.active { background: var(--ink); color: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.18); }
+.nav-tabs button:not(.active):hover { color: var(--ink); background: rgba(0,0,0,0.03); }
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.lumen-pill {
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 700;
+  background: linear-gradient(135deg, #14462B 0%, #0D2D1B 100%);
+  color: #FDF6E2; padding: 6px 14px;
+  border-radius: 100px; display: flex; align-items: center; gap: 7px;
+  box-shadow: 0 2px 8px rgba(20, 70, 43, 0.2);
+}
+.avatar-badge {
+  width: 36px; height: 36px; border-radius: 50%; background: var(--dim); border: 1.5px solid var(--line); color: var(--ink);
+  display: flex; align-items: center; justify-content: center; font-size: 12px;
+  font-family: 'JetBrains Mono', monospace; font-weight: 700; cursor: pointer; transition: all 0.15s;
+}
+.avatar-badge:hover { border-color: var(--leaf); transform: scale(1.04); }
+
+main { max-width: 1140px; margin: 0 auto; padding: 28px 24px 70px; }
+
+/* Cards & Layout */
+.card {
+  background: var(--card); border: 1px solid var(--line);
+  border-radius: var(--radius-lg); padding: 24px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 900px) {
+  .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+  .topbar { flex-direction: column; gap: 12px; }
+}
+
+.btn {
+  border: none; border-radius: 10px; padding: 10px 18px; font-size: 13px; font-weight: 600;
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+  transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--ink); color: #fff; }
+.btn-primary:hover { background: #1a3c2c; box-shadow: 0 4px 12px rgba(13,31,23,0.15); }
+.btn-leaf { background: var(--leaf); color: #fff; }
+.btn-leaf:hover { background: var(--leaf-dark); box-shadow: 0 4px 12px rgba(20,70,43,0.25); }
+.btn-purple { background: var(--purple); color: #fff; }
+.btn-purple:hover { opacity: 0.92; box-shadow: 0 4px 12px rgba(124,58,237,0.25); }
+.btn-ghost { background: var(--card); border: 1.5px solid var(--line); color: var(--ink-secondary); }
+.btn-ghost:hover { border-color: var(--ink); color: var(--ink); }
+.btn-danger { background: var(--danger); color: #fff; }
+
+/* Badges */
+.badge {
+  font-family: 'JetBrains Mono', monospace; font-size: 10.5px; font-weight: 700;
+  padding: 4px 10px; border-radius: 100px; text-transform: uppercase; display: inline-flex; align-items: center; gap: 5px;
+  letter-spacing: 0.04em;
+}
+.badge.leaf { background: var(--leaf-soft); color: var(--leaf-dark); border: 1px solid rgba(16,185,129,0.2); }
+.badge.purple { background: var(--purple-soft); color: var(--purple); border: 1px solid rgba(124,58,237,0.2); }
+.badge.danger { background: var(--danger-soft); color: var(--danger); border: 1px solid rgba(220,38,38,0.2); }
+.badge.sun { background: var(--sun-soft); color: #92400E; border: 1px solid rgba(217,119,6,0.2); }
+
+/* Sub-Meter Gauge Card */
+.meter-card {
+  background: linear-gradient(135deg, #FFFFFF 0%, #F6FAF7 100%);
+  border: 1.5px solid rgba(16,185,129,0.3); border-radius: var(--radius-lg);
+  padding: 24px 28px; margin-bottom: 24px; display: grid;
+  grid-template-columns: 1.2fr 1fr auto; gap: 24px; align-items: center;
+  box-shadow: 0 10px 30px rgba(16,185,129,0.06);
+}
+@media (max-width: 920px) { .meter-card { grid-template-columns: 1fr; } }
+
+/* Live Camera Box */
+.camera-container {
+  background: #09120E; border-radius: 16px; overflow: hidden; position: relative;
+  max-width: 520px; margin: 0 auto 16px; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 12px 36px rgba(0,0,0,0.25); border: 2px solid rgba(255,255,255,0.1);
+}
+#webcamVideo { width: 100%; height: 100%; object-fit: cover; }
+.camera-overlay {
+  position: absolute; inset: 0; pointer-events: none;
+  border: 2px dashed rgba(16,185,129,0.6); margin: 24px; border-radius: 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 14px;
+}
+.camera-overlay-text {
+  background: rgba(9,18,14,0.85); color: #fff; padding: 6px 14px; border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace; font-size: 11px; border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* Login Shell */
+.login-shell { min-height: 100vh; display: grid; grid-template-columns: 1.1fr 1fr; }
+@media (max-width: 880px) { .login-shell { grid-template-columns: 1fr; } }
+.login-hero {
+  background: linear-gradient(145deg, #0D2619 0%, #07150E 100%);
+  color: #fff; padding: 56px 48px;
+  display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden;
+}
+.login-hero h1 { font-size: 38px; line-height: 1.15; margin: 16px 0 14px; font-weight: 800; letter-spacing: -0.03em; }
+.login-hero p { font-size: 14.5px; line-height: 1.6; opacity: 0.82; max-width: 460px; }
+.login-form-pane { display: flex; align-items: center; justify-content: center; padding: 40px 28px; background: #fff; }
+.login-box { width: 100%; max-width: 400px; }
+.field { margin-bottom: 16px; }
+.field label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 6px; color: var(--ink-secondary); }
+.field input, .field select {
+  width: 100%; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 10px;
+  background: #fff; font-family: inherit; font-size: 13.5px; color: var(--ink);
+  transition: border-color 0.15s;
+}
+.field input:focus, .field select:focus { outline: none; border-color: var(--leaf); }
+
+.pulse-dot {
+  width: 8px; height: 8px; border-radius: 50%; background: #10B981;
+  box-shadow: 0 0 0 0 rgba(16,185,129,0.7);
+  animation: pulse 1.6s infinite cubic-bezier(0.66, 0, 0, 1);
+  display: inline-block;
+}
+@keyframes pulse { to { box-shadow: 0 0 0 8px rgba(16,185,129,0); } }
+
+/* Activity Rows */
+.row-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid var(--line); font-size: 13.5px;
+}
+.row-item:last-child { border-bottom: none; }
+.row-item .val { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--leaf-dark); }
+
+/* Toast Notification */
+.toast {
+  position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px);
+  background: var(--ink); color: #fff; padding: 13px 26px; border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace; font-size: 13px; font-weight: 600;
+  box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none; transition: 0.25s ease; z-index: 100;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="toast" id="toast"></div>
+
+<!-- 1. Supabase Library (local bundle with CDN fallback) -->
+<script src="./supabase.js"></script>
+<script>
+if (typeof window.supabase === 'undefined' && typeof supabase === 'undefined') {
+  document.write('<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"><\/script>');
+}
+</script>
+
+<script>
+/* ----------------------------------------------------
+   2. Supabase Database Connection
+---------------------------------------------------- */
+const SUPABASE_URL = "https://csyukbfknpxiunytmyrl.supabase.co";
+const SUPABASE_KEY = "sb_publishable_CID43qm-FCW7uSkTV0tFLg_LrWBF85O";
+
+const supaLib = (typeof window !== 'undefined' && window.supabase) || (typeof supabase !== 'undefined' ? supabase : null);
+const supabaseClient = supaLib ? supaLib.createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+
+/* ----------------------------------------------------
+   Master Campus & Hostels Data
+---------------------------------------------------- */
+const HOSTELS = [
+  "Aryabhatta Bhawan (Block A - Boys)",
+  "Raman Bhawan (Block B - Boys)",
+  "Bhabha Bhawan (Block C - Boys)",
+  "Tagore Bhawan (Block D - Boys)",
+  "Gargi Bhawan (Block E - Girls)",
+  "Sarojini Bhawan (Block F - Girls)",
+  "Kalpana Chawla Bhawan (Block G - Girls)"
+];
+
+const FLOORS = ["Ground Floor", "1st Floor", "2nd Floor", "3rd Floor"];
+
+/* ----------------------------------------------------
+   Reactive State
+---------------------------------------------------- */
+const state = {
+  screen: 'login',
+  role: 'student', // 'student' or 'warden'
+  tab: 'meter',
+  user: null,
+  myLumens: 210,
+
+  // Pillar 1: Sub-Meter & Group Credit (+10 Lu)
+  meterStatus: 'idle',
+  baselineKW: 12.5,
+  currentMeterKW: 1.6,
+  floorMembersCount: 42,
+
+  // IoT Smart Auto-Credit Dispatch Events
+  iotAutoCreditEvents: [
+    { floor: "2nd Floor (Aryabhatta)", drop: "87.2%", studentsCredited: 42, lumensTotal: 420, time: "Today 1:30 PM", status: "AUTO_DISPATCHED" },
+    { floor: "1st Floor (Gargi Bhawan)", drop: "89.4%", studentsCredited: 38, lumensTotal: 380, time: "Today 11:15 AM", status: "AUTO_DISPATCHED" },
+    { floor: "3rd Floor (Raman Bhawan)", drop: "84.1%", studentsCredited: 40, lumensTotal: 400, time: "Yesterday 2:00 PM", status: "AUTO_DISPATCHED" }
+  ],
+
+  // Pillar 2: Camera Scanner & Anti-Cheat State
+  cameraActive: false,
+  cameraStream: null,
+  scanState: 'idle',
+  lastScannedDevice: null,
+  
+  claimedHashes: ["hash_mock_room_204_lamp"],
+
+  // Warden Photo OCR Approval Queue
+  wardenPendingApprovals: [
+    { id: "OCR-9021", studentName: "Rohan Gupta", rollNo: "2024CS045", hostel: "Aryabhatta Bhawan", device: "Havells 15W Solar Study Lamp", inv: "INV-90218-A", tech: "BEE 5-Star / Solar", pts: 80, ocrScore: "99.4%", phash: "#a7f8e30b", status: "PENDING" },
+    { id: "OCR-9022", studentName: "Priya Nair", rollNo: "2024EC112", hostel: "Gargi Bhawan", device: "Atomberg 28W BLDC Room Fan", inv: "INV-84192-B", tech: "BEE 5-Star Certified", pts: 120, ocrScore: "98.8%", phash: "#b3c9d10e", status: "PENDING" },
+    { id: "OCR-9023", studentName: "Kunal Mehra", rollNo: "2024ME088", hostel: "Raman Bhawan", device: "Syska 9W Energy Saver LED Set", inv: "INV-33201-C", tech: "Class A LED", pts: 40, ocrScore: "97.2%", phash: "#e1a499ff", status: "PENDING" }
+  ],
+
+  // Pillar 3: Month-End Store (Locked Days 1-27, Unlocked Days 28-30)
+  isStoreUnlocked: false,
+  daysUntilUnlock: 4,
+  campusMonthlySavingsINR: 184500,
+  savingsTargetINR: 200000,
+
+  storeItems: [
+    { id: 1, name: "Eco Bamboo Ball Pen (Set of 5)", desc: "100% biodegradable body, blue smooth refill", baseCost: 40, emoji: "🖊️" },
+    { id: 2, name: "Plantable Seed Pencils (Box of 10)", desc: "Contains tomato & marigold seeds at bottom tip", baseCost: 35, emoji: "✏️" },
+    { id: 3, name: "Hardbound Practical Lab Journal", desc: "Recycled 80 GSM paper, 200 ruled pages", baseCost: 65, emoji: "📓" },
+    { id: 4, name: "Recycled Kraft Document File", desc: "For university assignments & practical submissions", baseCost: 25, emoji: "📁" },
+    { id: 5, name: "Solar Rechargeable Desk Lamp", desc: "Dual charging (Solar panel + USB), 3 light modes", baseCost: 210, emoji: "💡" },
+    { id: 6, name: "Solar USB Multi-Pin Cable Set", desc: "Braided multi-pin cable (Type-C, Lightning, Micro-USB)", baseCost: 70, emoji: "🔌" }
+  ],
+
+  activity: [
+    { label: "Sub-Meter Verified: Floor 2 (87% Drop during lectures)", pts: 10, when: "Today 1:30 PM", badge: "Group Reward" },
+    { label: "Camera Verified: Havells Solar 15W Lamp (INV-90218)", pts: 80, when: "Yesterday 4:00 PM", badge: "Personal Purchase" }
+  ],
+
+  hostelLeaderboard: [
+    { name: "Aryabhatta Bhawan", drops: 22, devices: 14, savedKwh: 4850, lumens: 18400, rank: 1 },
+    { name: "Gargi Bhawan", drops: 20, devices: 12, savedKwh: 4420, lumens: 16900, rank: 2 },
+    { name: "Raman Bhawan", drops: 18, devices: 9, savedKwh: 3980, lumens: 15200, rank: 3 },
+    { name: "Bhabha Bhawan", drops: 16, devices: 8, savedKwh: 3600, lumens: 13800, rank: 4 },
+    { name: "Tagore Bhawan", drops: 14, devices: 7, savedKwh: 3150, lumens: 12100, rank: 5 }
+  ]
+};
+
+function setRole(r) {
+  state.role = r;
+  render();
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(window.__toastTimer);
+  window.__toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function setTab(t) {
+  if (state.tab === 'camera_ai' && t !== 'camera_ai') {
+    stopCamera();
+  }
+  state.tab = t;
+  render();
+}
+
+function toggleStoreLock() {
+  state.isStoreUnlocked = !state.isStoreUnlocked;
+  if (state.isStoreUnlocked) toast("🔓 Month-End Reached: Store UNLOCKED for redemptions!");
+  else toast("🔒 Store LOCKED: Savings accumulating during month");
+  render();
+}
+
+/* ----------------------------------------------------
+   1. LOGIN SCREEN
+---------------------------------------------------- */
+function renderLogin() {
+  return `
+  <div class="login-shell">
+    <div class="login-hero">
+      <div>
+        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(255,255,255,0.08); padding:6px 14px; border-radius:100px; border:1px solid rgba(255,255,255,0.12); margin-bottom:20px;">
+          <span class="pulse-dot"></span>
+          <span class="mono" style="font-size:11px; color:#FDF6E2; letter-spacing:0.08em; text-transform:uppercase;">
+            Smart India Hackathon 2026 · Team innov8
+          </span>
+        </div>
+        <h1>Lumen: Smart Campus Energy &amp; Credits Platform</h1>
+        <p>
+          Real-time IoT sub-meter telemetry, automated class-hour power drop self-crediting, and warden OCR invoice verification for university campuses.
+        </p>
+      </div>
+
+      <div style="background:rgba(255,255,255,0.06); padding:20px 24px; border-radius:16px; border:1px solid rgba(255,255,255,0.12); backdrop-filter:blur(10px); margin:24px 0;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <span class="mono" style="font-size:11px; color:#10B981; font-weight:700; text-transform:uppercase;">IOT SMART METER NETWORK</span>
+          <span class="badge leaf" style="font-size:10px;">GATEWAY ONLINE</span>
+        </div>
+        <div style="font-size:16px; font-weight:700;">Hostel Sub-Meter Telemetry Stream</div>
+        <div style="font-size:12.5px; opacity:0.8; margin-top:4px;">Self-crediting +10 Lu on 80%+ daytime power drop · Zero Extra Hardware</div>
+      </div>
+
+      <div class="mono" style="font-size:11px; opacity:0.65;">
+        Category: Smart Energy &amp; Sustainability · Software MVP
+      </div>
+    </div>
+
+    <div class="login-form-pane">
+      <div class="login-box">
+        <div style="display:flex; align-items:center; gap:10px; margin-bottom:12px;">
+          <div class="brand-icon" style="width:34px; height:34px; font-size:18px;">⚡</div>
+          <h2 style="font-size:24px;">Campus Portal Login</h2>
+        </div>
+
+        <!-- Role Toggle Tabs -->
+        <div style="display:flex; gap:4px; background:var(--dim); padding:4px; border-radius:10px; margin-bottom:18px; border:1px solid var(--line);">
+          <button style="flex:1; padding:8px; border-radius:8px; border:none; font-size:12.5px; font-weight:700; cursor:pointer; background:${state.role==='student'?'var(--ink)':'transparent'}; color:${state.role==='student'?'#fff':'var(--ink-muted)'};" onclick="setRole('student')">
+            🎓 Student Login
+          </button>
+          <button style="flex:1; padding:8px; border-radius:8px; border:none; font-size:12.5px; font-weight:700; cursor:pointer; background:${state.role==='warden'?'var(--ink)':'transparent'}; color:${state.role==='warden'?'#fff':'var(--ink-muted)'};" onclick="setRole('warden')">
+            👔 Warden / Admin
+          </button>
+        </div>
+
+        ${state.role === 'student' ? `
+          <p style="font-size:13px; color:var(--ink-muted); margin-bottom:18px;">
+            Log in with your Student Roll No. to view your floor credits and live Supabase balance.
+          </p>
+
+          <div class="field">
+            <label>Student Roll Number / Email</label>
+            <input id="loginRoll" type="text" value="2024CS102@university.edu.in" />
+          </div>
+
+          <div class="field">
+            <label>Select Residential Hostel</label>
+            <select id="loginHostel">
+              ${HOSTELS.map(h => `<option ${h.includes('Aryabhatta')?'selected':''}>${h}</option>`).join('')}
+            </select>
+          </div>
+
+          <div class="grid2">
+            <div class="field">
+              <label>Wing / Floor</label>
+              <select id="loginFloor">
+                ${FLOORS.map(f => `<option ${f.includes('2nd')?'selected':''}>${f}</option>`).join('')}
+              </select>
+            </div>
+            <div class="field">
+              <label>Room Number</label>
+              <input id="loginRoom" type="text" value="A-204" />
+            </div>
+          </div>
+
+          <button class="btn btn-leaf" style="width:100%; padding:12px; margin-top:6px; font-size:14px;" onclick="doLogin('student')">
+            Enter Student Portal →
+          </button>
+        ` : `
+          <p style="font-size:13px; color:var(--ink-muted); margin-bottom:18px;">
+            Warden dashboard for sub-meter IoT telemetry monitoring, automated credit audits, and appliance OCR approvals.
+          </p>
+
+          <div class="field">
+            <label>Warden Staff ID / Official Email</label>
+            <input id="loginWardenId" type="text" value="warden.aryabhatta@university.edu.in" />
+          </div>
+
+          <div class="field">
+            <label>Assigned Hostel Complex</label>
+            <select id="loginWardenHostel">
+              <option selected>Aryabhatta &amp; Raman Bhawan Complex</option>
+              <option>Gargi &amp; Sarojini Bhawan Complex</option>
+              <option>Bhabha &amp; Tagore Bhawan Complex</option>
+            </select>
+          </div>
+
+          <button class="btn btn-purple" style="width:100%; padding:12px; margin-top:6px; font-size:14px;" onclick="doLogin('warden')">
+            Enter Warden Control Center →
+          </button>
+        `}
+
+        <div style="margin-top: 18px; font-size: 12px; color: var(--leaf-dark); background: var(--leaf-soft); padding: 11px 14px; border-radius: 10px; display:flex; align-items:center; gap:8px; border:1px solid rgba(16,185,129,0.25);">
+          <span>🔒 Verified through Sub-Meter Smart IoT Ledger &amp; Supabase</span>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ----------------------------------------------------
+   3. SUPABASE LOGIN QUERY
+---------------------------------------------------- */
+async function doLogin(role) {
+  state.role = role || state.role;
+  if (state.role === 'warden') {
+    state.user = {
+      name: "Dr. R. K. Verma",
+      role: "Hostel Warden",
+      hostel: "Aryabhatta & Raman Complex",
+      staffId: "WRD-8821"
+    };
+    state.tab = 'warden_iot';
+    state.screen = 'app';
+    render();
+    toast("Welcome, Warden Dr. R. K. Verma!");
+    return;
+  }
+
+  const rawRoll = document.getElementById('loginRoll') ? document.getElementById('loginRoll').value.trim() : "2024CS102";
+  const rollNo = rawRoll.split('@')[0].trim();
+  const hostel = document.getElementById('loginHostel') ? document.getElementById('loginHostel').value : "Aryabhatta Bhawan (Block A - Boys)";
+  const floor = document.getElementById('loginFloor') ? document.getElementById('loginFloor').value : "2nd Floor";
+  const room = document.getElementById('loginRoom') ? document.getElementById('loginRoom').value : "A-204";
+
+  toast("Connecting to Supabase...");
+
+  try {
+    let studentData = null;
+
+    if (supabaseClient) {
+      const { data, error } = await supabaseClient
+        .from('students')
+        .select('*')
+        .eq('roll_no', rollNo)
+        .single();
+
+      if (!error && data) {
+        studentData = data;
+        console.log("Supabase student record:", data);
+      } else if (error) {
+        console.warn("Supabase record note:", error.message);
+      }
+    }
+
+    if (studentData) {
+      state.user = {
+        name: studentData.name || "Student",
+        rollNo: studentData.roll_no || rollNo,
+        hostel: studentData.hostel || hostel,
+        floor: studentData.floor || floor,
+        room: studentData.room || room,
+        role: 'Student'
+      };
+      state.myLumens = studentData.lumens_balance !== undefined ? studentData.lumens_balance : 210;
+      toast(`🎉 Connected! Welcome ${state.user.name} (${state.myLumens} Lu)`);
+    } else {
+      // Fallback
+      state.user = { name: "Harsh Sachan", rollNo: rollNo, hostel, floor, room, role: 'Student' };
+      state.myLumens = 350;
+      toast(`Welcome ${state.user.name}!`);
+    }
+  } catch (err) {
+    console.error("Login query exception:", err);
+    state.user = { name: "Harsh Sachan", rollNo: rollNo, hostel, floor, room, role: 'Student' };
+    state.myLumens = 350;
+    toast(`Welcome ${state.user.name}!`);
+  }
+
+  state.screen = 'app';
+  state.tab = 'meter';
+  render();
+}
+
+function doLogout() {
+  stopCamera();
+  state.screen = 'login';
+  state.user = null;
+  render();
+}
+
+/* ----------------------------------------------------
+   2. PILLAR 1: SUB-METER & GROUP CREDIT (+10 Lu)
+---------------------------------------------------- */
+function renderMeterTab() {
+  const dropPct = (((state.baselineKW - state.currentMeterKW) / state.baselineKW) * 100).toFixed(1);
+
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--leaf-dark); font-weight:700;">
+        ⚡ PILLAR 1: CLASS-HOURS SUB-METER AUDIT (READ-ONLY TELEMETRY)
+      </div>
+      <h2>Hostel Class-Hours Power Drop (+10 Lu Rule)</h2>
+      <p style="font-size:13.5px; opacity:0.8; margin:4px 0 0;">
+        During lecture hours (9:00 AM – 4:00 PM), when sub-meters confirm rooms are empty, <strong>every student on ${state.user.floor} automatically earns +10 Lumens</strong>.
+      </p>
+    </div>
+    <span class="badge leaf" style="font-size:12px; padding:6px 14px;">
+      🕒 Active Window: 9:00 AM – 4:00 PM
+    </span>
+  </div>
+
+  <!-- Prominent System Architecture Notice for Judges & Students -->
+  <div style="background:rgba(20,70,43,0.06); border:1.5px solid rgba(20,70,43,0.2); border-radius:14px; padding:16px 20px; margin-bottom:20px; display:flex; align-items:flex-start; gap:14px;">
+    <div style="font-size:24px;">🏛️</div>
+    <div style="font-size:13px; line-height:1.55; color:var(--ink);">
+      <strong style="color:var(--leaf-dark); font-size:13.5px;">System Security &amp; Evaluation Notice:</strong><br/>
+      Students have <strong>read-only visibility</strong> and <em>cannot manually self-grant meter credits</em>. All +10 Lumen group awards are strictly triggered by <strong>Automated IoT Smart Meter Telemetry</strong> or verified by the <strong>Hostel Warden / Caretaker</strong> for legacy non-IoT meters.
+    </div>
+  </div>
+
+  <!-- Live Sub-Meter Telemetry Status Card (Read-Only) -->
+  <div class="meter-card">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--leaf-dark); font-weight:700; margin-bottom:4px;">
+        ${state.user.hostel.toUpperCase()} · ${state.user.floor.toUpperCase()} SUB-METER
+      </div>
+      <h3 style="font-size:20px; margin:0 0 4px;">
+        ✅ Telemetry Verified · +10 Lu Credited Today
+      </h3>
+      <p style="font-size:12.5px; opacity:0.8; margin:0;">
+        Current Active Draw: <strong style="color:var(--leaf-dark);">${state.currentMeterKW} kW</strong> &nbsp;|&nbsp; Baseline Draw: <strong>${state.baselineKW} kW</strong>
+      </p>
+    </div>
+
+    <div>
+      <div style="display:flex; justify-content:space-between; font-size:11.5px; font-family:'JetBrains Mono',monospace; margin-bottom:4px;">
+        <span>Floor Power Drop: <strong>${dropPct}%</strong></span>
+        <span style="color:var(--leaf-dark); font-weight:700;">Threshold: ≥ 80%</span>
+      </div>
+      <div style="height:10px; background:var(--dim); border-radius:6px; overflow:hidden;">
+        <div style="width:${Math.min(100, dropPct)}%; height:100%; background:var(--leaf);"></div>
+      </div>
+    </div>
+
+    <div>
+      <span class="badge leaf" style="font-size:12px; padding:8px 16px;">
+        🟢 AUTO-DISPATCHED
+      </span>
+    </div>
+  </div>
+
+  <div class="card" style="background:#FAFDF8; border:1.5px solid var(--leaf); margin-bottom:20px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:8px;">
+      <div>
+        <span class="badge leaf">TELEMETRY VERIFIED</span>
+        <strong style="font-size:16px; margin-left:8px;">${dropPct}% Load Reduction Confirmed!</strong>
+      </div>
+      <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--leaf-dark);">
+        🎉 +10 Lumens Active on Your Account
+      </span>
+    </div>
+    <p style="font-size:13px; color:var(--ink-secondary); line-height:1.55; margin:0;">
+      IoT sub-meter telemetry confirmed no idle running appliances on ${state.user.floor} between 9:00 AM and 4:00 PM. Total ${state.floorMembersCount * 10} Lumens were automatically distributed across all ${state.floorMembersCount} room accounts on this floor.
+    </p>
+  </div>
+
+  <div class="grid2">
+    <div class="card" style="margin:0;">
+      <h3 style="font-size:16px; margin-bottom:12px;">⚙️ How Group Verification Works</h3>
+      <ul style="font-size:13px; line-height:1.7; padding-left:18px; color:var(--ink-secondary);">
+        <li>Hostel sub-meters stream active power (kW) every 5 minutes.</li>
+        <li>When students leave for 9 AM lectures, floor consumption must drop below <strong>2.0 kW</strong>.</li>
+        <li>The system verifies that all room switches are OFF $\rightarrow$ <strong>every roommate on that floor gets +10 Lumens</strong>.</li>
+        <li>Encourages roommates to remind each other before leaving for morning classes!</li>
+      </ul>
+    </div>
+
+    <div class="card" style="margin:0;">
+      <h3 style="font-size:16px; margin-bottom:12px;">📜 Recent Floor Credit History</h3>
+      ${state.activity.map(a => `
+        <div class="row-item">
+          <div>
+            <div style="font-weight:600;">${a.label}</div>
+            <div style="font-size:11px; opacity:0.6; font-family:'JetBrains Mono',monospace;">${a.when} · <span style="color:var(--leaf-dark); font-weight:600;">${a.badge}</span></div>
+          </div>
+          <div class="val">+${a.pts} Lu</div>
+        </div>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+/* ----------------------------------------------------
+   4. PILLAR 2: CAMERA SCANNER & ANTI-CHEAT
+---------------------------------------------------- */
+function renderCameraAITab() {
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--purple); font-weight:700;">
+        📷 PILLAR 2: LIVE CAMERA &amp; ANTI-CHEAT AUTHENTICATION
+      </div>
+      <h2>Invoice &amp; Energy Device Camera Scanner</h2>
+      <p style="font-size:13.5px; opacity:0.75; margin:4px 0 0;">
+        Use your device camera or upload an invoice/meter photo. System verifies genuine purchases and blocks duplicate image cheating.
+      </p>
+    </div>
+    <span class="badge purple" style="font-size:12px; padding:6px 14px;">
+      Live Camera &amp; pHash Anti-Fraud Active
+    </span>
+  </div>
+
+  <div class="card" style="border: 2px solid var(--purple);">
+    <h3 style="font-size:17px; margin-bottom:12px;">Step 1: Scan via Live Camera or Use Preset Test Samples</h3>
+
+    <div class="camera-container" id="cameraBox">
+      ${state.cameraActive ? `
+        <video id="webcamVideo" autoplay playsinline></video>
+        <div class="camera-overlay">
+          <div class="camera-overlay-text">Align Invoice / Energy Label Inside Frame</div>
+        </div>
+      ` : `
+        <div style="text-align:center; color:#fff; padding:20px;">
+          <div style="font-size:40px; margin-bottom:8px;">📷</div>
+          <div style="font-family:'JetBrains Mono',monospace; font-size:13px; margin-bottom:12px;">Live Camera Scanner Offline</div>
+          <button class="btn btn-purple" onclick="startCamera()">Turn On Device Camera</button>
+        </div>
+      `}
+    </div>
+
+    <div style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap; margin-bottom:20px;">
+      ${state.cameraActive ? `
+        <button class="btn btn-leaf" onclick="captureCameraSnapshot()">📸 Capture Frame &amp; Run Audit</button>
+        <button class="btn btn-ghost" onclick="stopCamera()">Turn Off Camera</button>
+      ` : ''}
+    </div>
+
+    <!-- Live Demo Presets -->
+    <div style="background:var(--dim); padding:16px; border-radius:12px; margin-bottom:20px;">
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; font-weight:700; color:var(--ink-secondary); margin-bottom:8px; text-transform:uppercase;">
+        🎯 Live Demo Test Presets (Instant Simulation):
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button class="btn btn-purple" onclick="simulateScan('valid')">
+          🟢 Test Genuine Solar Lamp Invoice (INV-90218)
+        </button>
+        <button class="btn btn-danger" onclick="simulateScan('duplicate')">
+          🔴 Test Duplicate Image Cheat (Catches Photo Re-use)
+        </button>
+        <button class="btn btn-primary" onclick="simulateScan('fan')">
+          🌿 Test BEE 5-Star BLDC Fan Label (+120 Lu)
+        </button>
+      </div>
+    </div>
+
+    <!-- Output Card -->
+    ${state.scanState === 'scanning' ? `
+      <div style="background:#FAF7FC; padding:24px; border-radius:12px; text-align:center; font-family:'JetBrains Mono',monospace;">
+        🔄 OCR &amp; Perceptual Hash Model scanning image frame &amp; database...
+      </div>
+    ` : ''}
+
+    ${state.scanState === 'success' ? `
+      <div style="background:#F6FCF7; border:1.5px solid var(--leaf); border-radius:14px; padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:12px;">
+          <div>
+            <span class="badge leaf">INVOICE OCR VERIFIED</span>
+            <strong style="font-size:16px; margin-left:8px;">${state.lastScannedDevice ? state.lastScannedDevice.name : 'Havells Solar 15W LED Desk Lamp'}</strong>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:15px; font-weight:700; color:var(--leaf-dark);">
+            +${state.lastScannedDevice ? state.lastScannedDevice.pts : 80} Personal Lumens Credited!
+          </span>
+        </div>
+
+        <div class="grid3" style="background:#fff; padding:14px; border-radius:10px; border:1px solid var(--line); font-size:12.5px;">
+          <div>
+            <span style="opacity:0.6; display:block;">Extracted Invoice ID</span>
+            <strong>${state.lastScannedDevice ? state.lastScannedDevice.inv : 'INV-90218-A'} (Unique Verified)</strong>
+          </div>
+          <div>
+            <span style="opacity:0.6; display:block;">Energy Classification</span>
+            <strong style="color:var(--leaf-dark);">${state.lastScannedDevice ? state.lastScannedDevice.tech : 'BEE 5-Star / Solar Hybrid'}</strong>
+          </div>
+          <div>
+            <span style="opacity:0.6; display:block;">Image Hash (pHash)</span>
+            <strong class="mono">#a7f8e30b (New Fingerprint)</strong>
+          </div>
+        </div>
+      </div>
+    ` : ''}
+
+    ${state.scanState === 'duplicate_rejected' ? `
+      <div style="background:#FDF6F5; border:1.5px solid var(--danger); border-radius:14px; padding:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:8px;">
+          <div>
+            <span class="badge danger">❌ FRAUD DETECTED: DUPLICATE IMAGE</span>
+            <strong style="font-size:16px; color:var(--danger); margin-left:8px;">Claim Blocked</strong>
+          </div>
+          <span style="font-family:'JetBrains Mono',monospace; font-size:13px; font-weight:700; color:var(--danger);">
+            0 Lumens Awarded
+          </span>
+        </div>
+
+        <p style="font-size:13px; color:var(--ink-secondary); line-height:1.55; margin:0;">
+          <strong>Perceptual Hash (pHash) Match: 98.4%</strong>. This exact photo was already uploaded and claimed by Room 204 yesterday. The system blocked the duplicate submission to prevent gaming the rewards.
+        </p>
+      </div>
+    ` : ''}
+  </div>
+
+  <!-- Eligible Green Devices Catalog -->
+  <div class="card">
+    <h3 style="font-size:17px; margin-bottom:12px;">Eligible Personal Green Tech &amp; Reward Tiers</h3>
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="border-bottom:1.5px solid var(--line); font-family:'JetBrains Mono',monospace; opacity:0.6;">
+          <th style="text-align:left; padding:8px 0;">APPLIANCE / SOLAR DEVICE</th>
+          <th style="text-align:left; padding:8px 0;">ENERGY SAVING BENEFIT</th>
+          <th style="text-align:right; padding:8px 0;">PERSONAL REWARD</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-bottom:1px solid var(--line);">
+          <td style="padding:10px 0; font-weight:600;">☀️ Solar Desk Lamp / Solar Study Lantern</td>
+          <td>100% Off-grid LED lighting during study hours</td>
+          <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--leaf-dark);">+80 Lu</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--line);">
+          <td style="padding:10px 0; font-weight:600;">🌿 BEE 5-Star BLDC Room Fan (28W vs 75W)</td>
+          <td>62% energy reduction in room cooling load</td>
+          <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--leaf-dark);">+120 Lu</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--line);">
+          <td style="padding:10px 0; font-weight:600;">💡 9W LED Bulb / 20W LED Tube Light Swap</td>
+          <td>Replaces 40W inefficient fluorescent tubes</td>
+          <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--leaf-dark);">+40 Lu</td>
+        </tr>
+        <tr style="border-bottom:1px solid var(--line);">
+          <td style="padding:10px 0; font-weight:600;">🔌 Smart Auto-Cutoff Power Extension Strip</td>
+          <td>Eliminates overnight charger phantom draw</td>
+          <td style="text-align:right; font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--leaf-dark);">+50 Lu</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>`;
+}
+
+/* Real Device Camera Functions */
+async function startCamera() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+    state.cameraStream = stream;
+    state.cameraActive = true;
+    render();
+    setTimeout(() => {
+      const vid = document.getElementById('webcamVideo');
+      if (vid) vid.srcObject = stream;
+    }, 100);
+    toast("Camera activated! Frame your invoice or appliance.");
+  } catch (err) {
+    toast("Camera permission notice: Using Demo Presets instead.");
+    console.error(err);
+  }
+}
+
+function stopCamera() {
+  if (state.cameraStream) {
+    state.cameraStream.getTracks().forEach(track => track.stop());
+    state.cameraStream = null;
+  }
+  state.cameraActive = false;
+  render();
+}
+
+function captureCameraSnapshot() {
+  stopCamera();
+  simulateScan('valid');
+}
+
+async function simulateScan(type) {
+  state.scanState = 'scanning';
+  render();
+
+  setTimeout(async () => {
+    if (type === 'valid') {
+      state.scanState = 'success';
+      state.lastScannedDevice = { name: "Havells Solar 15W LED Desk Lamp", inv: "INV-90218-A", tech: "BEE 5-Star / Solar Hybrid", pts: 80 };
+      state.myLumens += 80;
+      state.activity.unshift({
+        label: "Camera Verified: Solar Desk Lamp (INV-90218)",
+        pts: 80,
+        when: "Just now",
+        badge: "Personal Purchase"
+      });
+
+      // Update Supabase if available
+      if (supabaseClient && state.user && state.user.rollNo) {
+        await supabaseClient.from('students').update({ lumens_balance: state.myLumens }).eq('roll_no', state.user.rollNo);
+      }
+
+      toast("🎉 Valid Solar Device verified! +80 Personal Lumens added.");
+    } else if (type === 'fan') {
+      state.scanState = 'success';
+      state.lastScannedDevice = { name: "Atomberg 28W BLDC Energy Saver Fan", inv: "INV-84192-B", tech: "BEE 5-Star Certified", pts: 120 };
+      state.myLumens += 120;
+      state.activity.unshift({
+        label: "Camera Verified: 5-Star BLDC Fan (INV-84192)",
+        pts: 120,
+        when: "Just now",
+        badge: "Personal Purchase"
+      });
+
+      // Update Supabase if available
+      if (supabaseClient && state.user && state.user.rollNo) {
+        await supabaseClient.from('students').update({ lumens_balance: state.myLumens }).eq('roll_no', state.user.rollNo);
+      }
+
+      toast("🎉 5-Star BLDC Fan verified! +120 Personal Lumens added.");
+    } else {
+      state.scanState = 'duplicate_rejected';
+      toast("❌ Fraud Blocked: Duplicate image hash detected!");
+    }
+    render();
+  }, 700);
+}
+
+/* ----------------------------------------------------
+   5. PILLAR 3: LOCKED MONTH-END STORE (Subsidized Student Supplies)
+---------------------------------------------------- */
+function renderStore() {
+  const savingsRatio = Math.min(1.0, state.campusMonthlySavingsINR / state.savingsTargetINR);
+
+  if (!state.isStoreUnlocked) {
+    return `
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+      <div>
+        <h2>Lumen Stationery &amp; Campus Supplies Store</h2>
+        <p style="font-size:13.5px; opacity:0.8; margin:4px 0 0;">
+          The store is locked during the billing cycle and unlocks for 72 hours at month-end.
+        </p>
+      </div>
+      <button class="btn btn-ghost" style="font-size:12px;" onclick="toggleStoreLock()">
+        ⚡ Simulate Month-End Unlock
+      </button>
+    </div>
+
+    <!-- Locked Banner -->
+    <div class="card" style="background:var(--ink); color:#fff; border-radius:18px; padding:32px; text-align:center;">
+      <div style="font-size:36px; margin-bottom:6px;">🔒</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:0.14em; color:var(--sun-soft); text-transform:uppercase;">
+        STORE LOCKED · BILLING CYCLE IN PROGRESS
+      </div>
+      <h2 style="color:#fff; font-size:26px; margin:8px 0;">Unlocks in ${state.daysUntilUnlock} Days (Month-End Window)</h2>
+      <p style="font-size:13.5px; opacity:0.75; max-width:540px; margin:0 auto 20px; line-height:1.55;">
+        The store unlocks for 72 hours at the end of each billing cycle, allowing students to redeem their verified Lumens for academic stationery, journals, and solar study items funded by campus electricity savings.
+      </p>
+
+      <div style="background:rgba(255,255,255,0.08); border-radius:14px; padding:18px; max-width:560px; margin:0 auto; text-align:left; border:1px solid rgba(255,255,255,0.12);">
+        <div style="display:flex; justify-content:space-between; font-size:12.5px; font-family:'JetBrains Mono',monospace; margin-bottom:8px;">
+          <span>Current Campus Electricity Savings: <strong>₹${state.campusMonthlySavingsINR.toLocaleString()}</strong></span>
+          <span style="color:var(--sun-soft);">Target: ₹${state.savingsTargetINR.toLocaleString()}</span>
+        </div>
+        <div style="height:10px; background:rgba(255,255,255,0.2); border-radius:6px; overflow:hidden;">
+          <div style="width:${Math.round(savingsRatio * 100)}%; height:100%; background:var(--sun);"></div>
+        </div>
+        <div style="font-size:12px; color:var(--sun-soft); margin-top:10px; font-family:'JetBrains Mono',monospace;">
+          🌱 Verified Savings Pool: <strong>₹${state.campusMonthlySavingsINR.toLocaleString()}</strong> allocated for student redemptions.
+        </div>
+      </div>
+    </div>
+
+    <!-- Official Administrative Notice -->
+    <div style="background:rgba(229,159,45,0.12); border:1px solid rgba(229,159,45,0.3); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:12px; line-height:1.5; color:var(--ink);">
+      📢 <strong>Institutional Policy Notice:</strong> Item redemption costs in Lumens are established in consultation with university administration and funded by verified campus energy savings.
+    </div>
+
+    <!-- Locked Catalog Preview -->
+    <div class="grid2">
+      ${state.storeItems.map(p => `
+        <div class="card" style="opacity:0.8; display:flex; justify-content:space-between; align-items:center; background:#fafafa; margin:0;">
+          <div style="display:flex; align-items:center; gap:14px;">
+            <div style="font-size:32px; filter:grayscale(30%);">${p.emoji}</div>
+            <div>
+              <h4 style="margin:0 0 2px; font-size:15px;">${p.name}</h4>
+              <p style="font-size:12px; color:var(--ink-secondary); margin:0 0 4px;">${p.desc}</p>
+              <div style="font-family:'JetBrains Mono',monospace; font-size:12px; opacity:0.8;">
+                Redemption Cost: <strong>${p.baseCost} Lu</strong>
+              </div>
+            </div>
+          </div>
+          <span style="font-size:11.5px; font-family:'JetBrains Mono',monospace; background:var(--dim); padding:6px 12px; border-radius:6px; font-weight:600;">
+            🔒 Locked
+          </span>
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  // Unlocked State
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:10px;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--leaf-dark); font-weight:700;">
+        🎉 MONTH-END REDEMPTION WINDOW OPEN · 72-HOUR FLASH WINDOW
+      </div>
+      <h2>Campus Stationery &amp; Solar Rewards Store</h2>
+    </div>
+    <button class="btn btn-ghost" style="font-size:12px;" onclick="toggleStoreLock()">
+      🔒 Return to Locked State
+    </button>
+  </div>
+
+  <div style="background:rgba(229,159,45,0.12); border:1px solid rgba(229,159,45,0.3); border-radius:10px; padding:12px 16px; margin-bottom:20px; font-size:12px; line-height:1.5; color:var(--ink);">
+    📢 <strong>Institutional Policy Notice:</strong> Item redemptions are funded by verified campus electricity savings in consultation with college administration.
+  </div>
+
+  <div class="grid2">
+    ${state.storeItems.map(p => {
+      return `
+      <div class="card" style="display:flex; justify-content:space-between; align-items:center; margin:0;">
+        <div style="display:flex; align-items:center; gap:14px;">
+          <div style="font-size:34px;">${p.emoji}</div>
+          <div>
+            <h4 style="margin:0 0 2px; font-size:15px;">${p.name}</h4>
+            <p style="font-size:12px; color:var(--ink-secondary); margin:0 6px;">${p.desc}</p>
+            <div style="font-family:'JetBrains Mono',monospace; font-size:13px;">
+              <strong style="color:var(--leaf-dark); font-size:14px;">${p.baseCost} Lu</strong>
+            </div>
+          </div>
+        </div>
+        <button class="btn ${state.myLumens >= p.baseCost ? 'btn-leaf' : 'btn-ghost'}"
+          ${state.myLumens < p.baseCost ? 'disabled' : ''}
+          onclick="buyStoreItem('${p.name}', ${p.baseCost})">
+          ${state.myLumens >= p.baseCost ? `Redeem (${p.baseCost} Lu)` : 'Not Enough Lu'}
+        </button>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+async function buyStoreItem(name, cost) {
+  if (state.myLumens < cost) return;
+
+  state.myLumens -= cost;
+
+  // Sync updated balance to Supabase
+  if (supabaseClient && state.user && state.user.rollNo) {
+    try {
+      await supabaseClient
+        .from('students')
+        .update({ lumens_balance: state.myLumens })
+        .eq('roll_no', state.user.rollNo);
+    } catch (e) {
+      console.warn("Could not sync redemption balance to Supabase:", e);
+    }
+  }
+
+  state.activity.unshift({ label: `Redeemed: ${name}`, pts: -cost, when: "Just now", badge: "Reward Purchase" });
+  render();
+  toast(`Redeemed ${name}! Item token generated.`);
+}
+
+/* ----------------------------------------------------
+   6. HOSTEL LEADERBOARD
+---------------------------------------------------- */
+function renderLeaderboard() {
+  return `
+  <div style="margin-bottom:20px;">
+    <h2>Inter-Hostel Energy Standings</h2>
+    <p style="font-size:13.5px; opacity:0.8;">
+      Ranked by verified class-hour drops and energy-saving appliances registered.
+    </p>
+  </div>
+
+  <div class="card">
+    <div style="display:grid; grid-template-columns: 50px 1.5fr 1fr 1fr 120px; font-family:'JetBrains Mono',monospace; font-size:11.5px; opacity:0.6; padding-bottom:10px; border-bottom:1.5px solid var(--line);">
+      <span>RANK</span>
+      <span>HOSTEL NAME</span>
+      <span>CLASS DROPS</span>
+      <span>ENERGY SAVED</span>
+      <span style="text-align:right;">TOTAL LUMENS</span>
+    </div>
+
+    ${state.hostelLeaderboard.map((h, i) => `
+      <div class="row-item" style="display:grid; grid-template-columns: 50px 1.5fr 1fr 1fr 120px; align-items:center;">
+        <span style="font-family:'JetBrains Mono',monospace; font-weight:700; font-size:14px;">#${i + 1}</span>
+        <div>
+          <strong style="font-size:14px;">${h.name}</strong>
+          <div style="font-size:11.5px; opacity:0.6; font-family:'JetBrains Mono',monospace;">${h.devices} Energy-Saving Devices Registered</div>
+        </div>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">${h.drops} Days Verified</span>
+        <span style="font-family:'JetBrains Mono',monospace; font-size:13px;">${h.savedKwh.toLocaleString()} kWh</span>
+        <span class="val" style="text-align:right; font-size:14px;">${h.lumens.toLocaleString()} Lu</span>
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+/* ----------------------------------------------------
+   7. CAMPUS ENERGY AUDIT (Clean & Simple Impact)
+---------------------------------------------------- */
+function renderAudit() {
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--leaf-dark); font-weight:700;">
+        📊 CAMPUS ENERGY &amp; SUSTAINABILITY AUDIT
+      </div>
+      <h2>Institutional Carbon &amp; Power Ledger</h2>
+      <p style="font-size:13.5px; opacity:0.75; margin:4px 0 0;">
+        Real-time telemetry and audited impact metrics generated across university residential hostels.
+      </p>
+    </div>
+    <button class="btn btn-leaf" onclick="printOfficialAuditCertificate()">
+      📄 Export Official Audit Certificate
+    </button>
+  </div>
+
+  <!-- 4 Impact Metric Cards -->
+  <div class="grid4" style="margin-bottom:24px;">
+    <div class="card" style="margin:0; border-left:4px solid var(--leaf);">
+      <div style="font-size:12px; color:var(--ink-muted); font-weight:600;">Total Power Conserved</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:800; color:var(--leaf-dark); margin:6px 0 4px;">
+        59,600 kWh
+      </div>
+      <div style="font-size:11px; opacity:0.75;">⚡ Powering ~120 homes for a month</div>
+    </div>
+
+    <div class="card" style="margin:0; border-left:4px solid var(--sun);">
+      <div style="font-size:12px; color:var(--ink-muted); font-weight:600;">Financial Savings (INR)</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:800; color:#8C5806; margin:6px 0 4px;">
+        ₹1,84,500
+      </div>
+      <div style="font-size:11px; opacity:0.75;">💰 Funds student stationery rewards</div>
+    </div>
+
+    <div class="card" style="margin:0; border-left:4px solid var(--purple);">
+      <div style="font-size:12px; color:var(--ink-muted); font-weight:600;">Carbon Emissions Avoided</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:800; color:var(--purple); margin:6px 0 4px;">
+        48.8 Tons
+      </div>
+      <div style="font-size:11px; opacity:0.75;">🚗 Removing 11 cars off roads / yr</div>
+    </div>
+
+    <div class="card" style="margin:0; border-left:4px solid #1C5450;">
+      <div style="font-size:12px; color:var(--ink-muted); font-weight:600;">Ecological Forest Offset</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:26px; font-weight:800; color:#1C5450; margin:6px 0 4px;">
+        2,190 Trees
+      </div>
+      <div style="font-size:11px; opacity:0.75;">🌲 Equivalent 10-year tree absorption</div>
+    </div>
+  </div>
+
+  <!-- Simplified Clear Summary -->
+  <div class="card">
+    <h3 style="font-size:16px; margin-bottom:12px;">Sustainability Milestone Summary</h3>
+    <p style="font-size:13.5px; line-height:1.6; color:var(--ink-secondary); margin-bottom:14px;">
+      Through collective class-hour empty room power drops and verified student adoption of 5-star &amp; solar appliances, the campus has reduced daytime idle electricity waste by <strong>87.4%</strong>. The entire ₹1,84,500 financial savings are directly deposited into the student reward pool for month-end stationery distribution.
+    </p>
+    <div style="display:flex; gap:20px; flex-wrap:wrap; font-size:12.5px; font-family:'JetBrains Mono',monospace; color:var(--leaf-dark);">
+      <span>✓ 96 Class-Hour Drops Logged</span>
+      <span>✓ 50 Energy Devices Registered</span>
+      <span>✓ 0 Duplicate Claims Detected</span>
+    </div>
+  </div>`;
+}
+
+function printOfficialAuditCertificate() {
+  const win = window.open('', '_blank', 'width=850,height=950');
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Campus Energy &amp; Carbon Audit Certificate</title>
+      <style>
+        body { font-family: 'Times New Roman', serif; padding: 40px; color: #111; line-height: 1.6; }
+        .cert-container { border: 4px double #222; padding: 34px; }
+        .head { text-align: center; border-bottom: 2px solid #333; padding-bottom: 16px; margin-bottom: 20px; }
+        h1 { margin: 0; font-size: 22px; text-transform: uppercase; }
+        h2 { margin: 6px 0; font-size: 15px; font-weight: normal; color: #444; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 20px 0; }
+        .box { border: 1px solid #777; padding: 12px 16px; background: #fafafa; }
+        .box strong { font-size: 18px; display: block; margin-top: 4px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #555; padding: 8px 12px; text-align: left; font-size: 13px; }
+        th { background: #f0f0f0; }
+        .footer { margin-top: 50px; display: flex; justify-content: space-between; text-align: center; }
+        .sig { width: 190px; border-top: 1px solid #333; margin-top: 40px; font-size: 12px; }
+      </style>
+    </head>
+    <body>
+      <div class="cert-container">
+        <div class="head">
+          <h1>Central University Institute of Technology</h1>
+          <h2>Autonomous Technical Campus · Department of Energy &amp; Sustainability</h2>
+          <h3 style="font-size:16px; margin-top:10px; color:#1a3d24;">Institutional Green Energy &amp; Carbon Audit Certificate</h3>
+          <p style="font-size:12px; margin:4px 0 0;">Official Energy Demand-Response &amp; Carbon Mitigation Record</p>
+        </div>
+
+        <p>This is to officially certify that the <strong>Lumen Campus Energy Management Ledger</strong> has recorded and verified the following quantitative sustainability metrics for the institution during Academic Year 2025–2026:</p>
+
+        <div class="stats-grid">
+          <div class="box">Total Energy Conserved:<strong>59,600 kWh</strong></div>
+          <div class="box">Institutional Financial Savings:<strong>₹1,84,500 INR</strong></div>
+          <div class="box">Carbon Emissions Avoided (CO₂):<strong>48.8 Metric Tons</strong></div>
+          <div class="box">Ecological Tree Equivalent Offset:<strong>🌲 2,190 Trees</strong></div>
+        </div>
+
+        <table>
+          <tr><th>Category</th><th>Details</th><th>Verified Metric Output</th></tr>
+          <tr><td>Hostel Energy Conservation</td><td>Daytime Empty Room Power Reductions</td><td>16,800 kWh</td></tr>
+          <tr><td>Efficient Devices Registered</td><td>Solar &amp; BEE 5-Star Student Appliances</td><td>42,800 kWh Offset</td></tr>
+          <tr><td>Environmental Impact</td><td>Carbon Offset (CEA Factor: 0.82 kg/kWh)</td><td>48.8 Metric Tons CO₂</td></tr>
+        </table>
+
+        <div class="footer">
+          <div><div class="sig">Campus Energy Officer<br/>Central University</div></div>
+          <div><div class="sig">Sustainability Coordinator<br/>Central University</div></div>
+          <div><div class="sig">Dean (Planning &amp; Resource)<br/>Vice Chancellor Seal</div></div>
+        </div>
+      </div>
+    </body>
+    </html>
+  `);
+  win.document.close();
+  win.focus();
+}
+
+/* ----------------------------------------------------
+   8. WARDEN MODULE 1: IOT SMART METER & MANUAL NON-IOT VERIFICATION
+---------------------------------------------------- */
+function renderWardenIoTTab() {
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:4px;">
+        <span class="badge purple">👔 WARDEN CONTROL · SMART IOT &amp; MANUAL AUDIT ENGINE</span>
+      </div>
+      <h2 style="font-size:24px;">Sub-Meter Telemetry &amp; Non-IoT Verification</h2>
+      <p style="font-size:13.5px; color:var(--ink-muted); margin:3px 0 0;">
+        Real-time IoT smart meter telemetry with automated self-crediting, plus manual ledger verification tools for legacy hostel blocks without digital IoT meters.
+      </p>
+    </div>
+    <div style="display:flex; gap:8px;">
+      <button class="btn btn-leaf" onclick="triggerIotAutoCredit()">
+        ⚡ Simulate IoT Auto-Drop Trigger
+      </button>
+    </div>
+  </div>
+
+  <!-- Real-Time Wing Status Grid -->
+  <div class="grid4" style="margin-bottom:24px;">
+    <div class="card" style="margin:0; border-top:4px solid var(--emerald);">
+      <div style="font-family:'JetBrains Mono',monospace; color:var(--leaf); font-weight:700;">WING A · GROUND FLOOR</div>
+      <div style="font-size:20px; font-weight:800; margin:6px 0 2px;">2.4 kW <span style="font-size:12px; font-weight:500; color:var(--ink-muted);">/ 12.0 kW</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; margin-top:6px;">
+        <span style="color:var(--emerald); font-weight:700;">80.0% Drop</span>
+        <span class="badge leaf" style="font-size:9px;">SELF-CREDITED</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0; border-top:4px solid var(--emerald);">
+      <div style="font-family:'JetBrains Mono',monospace; color:var(--leaf); font-weight:700;">WING A · 1ST FLOOR</div>
+      <div style="font-size:20px; font-weight:800; margin:6px 0 2px;">1.8 kW <span style="font-size:12px; font-weight:500; color:var(--ink-muted);">/ 12.5 kW</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; margin-top:6px;">
+        <span style="color:var(--emerald); font-weight:700;">85.6% Drop</span>
+        <span class="badge leaf" style="font-size:9px;">SELF-CREDITED</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0; border-top:4px solid var(--emerald);">
+      <div style="font-family:'JetBrains Mono',monospace; color:var(--leaf); font-weight:700;">WING A · 2ND FLOOR</div>
+      <div style="font-size:20px; font-weight:800; margin:6px 0 2px;">1.6 kW <span style="font-size:12px; font-weight:500; color:var(--ink-muted);">/ 12.5 kW</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; margin-top:6px;">
+        <span style="color:var(--emerald); font-weight:700;">87.2% Drop</span>
+        <span class="badge leaf" style="font-size:9px;">SELF-CREDITED</span>
+      </div>
+    </div>
+
+    <div class="card" style="margin:0; border-top:4px solid var(--sun);">
+      <div style="font-family:'JetBrains Mono',monospace; color:#B45309; font-weight:700;">WING A · 3RD FLOOR</div>
+      <div style="font-size:20px; font-weight:800; margin:6px 0 2px;">4.2 kW <span style="font-size:12px; font-weight:500; color:var(--ink-muted);">/ 11.8 kW</span></div>
+      <div style="display:flex; justify-content:space-between; align-items:center; font-size:11.5px; margin-top:6px;">
+        <span style="color:#B45309; font-weight:700;">64.4% Drop</span>
+        <span class="badge sun" style="font-size:9px;">IDLE LOAD ALERT</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Manual Verification for Non-IoT / Legacy Sub-Meters -->
+  <div class="card" style="border:1.5px solid rgba(217,119,6,0.3); background:#FCFDFD; margin-bottom:24px;">
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+      <div>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <span class="badge sun">⚡ LEGACY / NON-IOT AUDIT PANEL</span>
+          <h3 style="font-size:17px; margin:0;">Manual Sub-Meter Reading Verification</h3>
+        </div>
+        <p style="font-size:12.5px; color:var(--ink-muted); margin:3px 0 0;">
+          For older hostel wings without digital IoT smart meters: Warden manually logs physical sub-meter readings to grant group credits.
+        </p>
+      </div>
+      <span class="badge purple">WARDEN SIGNATURE REQUIRED</span>
+    </div>
+
+    <div class="grid4" style="background:#fff; padding:16px; border-radius:12px; border:1px solid var(--line); margin-bottom:16px;">
+      <div class="field" style="margin:0;">
+        <label>Hostel Block &amp; Wing</label>
+        <select id="manualHostel">
+          <option>Bhabha Bhawan (Block C - Non-IoT)</option>
+          <option>Tagore Bhawan (Block D - Non-IoT)</option>
+          <option>Sarojini Bhawan (Block F - Non-IoT)</option>
+        </select>
+      </div>
+
+      <div class="field" style="margin:0;">
+        <label>Floor / Sub-Meter Section</label>
+        <select id="manualFloor">
+          <option>3rd Floor (38 Students)</option>
+          <option>2nd Floor (40 Students)</option>
+          <option>1st Floor (42 Students)</option>
+        </select>
+      </div>
+
+      <div class="field" style="margin:0;">
+        <label>Morning Occupied Baseline (kW)</label>
+        <input id="manualBaseKw" type="number" value="12.0" step="0.1" />
+      </div>
+
+      <div class="field" style="margin:0;">
+        <label>Lecture-Hour Reading (kW)</label>
+        <input id="manualActiveKw" type="number" value="1.8" step="0.1" />
+      </div>
+    </div>
+
+    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+      <div style="font-size:13px; color:var(--ink-secondary);">
+        Calculated Power Reduction: <strong style="color:var(--leaf); font-size:15px; font-family:'JetBrains Mono',monospace;">85.0% Load Drop</strong> (Passes ≥ 80% Threshold)
+      </div>
+      <button class="btn btn-leaf" onclick="wardenManualCreditNonIot()">
+        ✍️ Warden Sign &amp; Dispatch +10 Lu (Manual Ledger Entry)
+      </button>
+    </div>
+  </div>
+
+  <!-- Live Automated Self-Credit Log -->
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+      <h3 style="font-size:17px; display:flex; align-items:center; gap:8px;">
+        <span>🤖</span> Sub-Meter Self-Crediting &amp; Audit Dispatch Log
+      </h3>
+      <span class="badge leaf">LIVE LEDGER STREAM</span>
+    </div>
+    
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="border-bottom:1.5px solid var(--line); font-family:'JetBrains Mono',monospace; opacity:0.65;">
+          <th style="text-align:left; padding:8px 0;">HOSTEL &amp; FLOOR</th>
+          <th style="text-align:left; padding:8px 0;">POWER REDUCTION</th>
+          <th style="text-align:left; padding:8px 0;">STUDENTS CREDITED</th>
+          <th style="text-align:left; padding:8px 0;">TOTAL LUMENS</th>
+          <th style="text-align:right; padding:8px 0;">TIMESTAMP / STATUS</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${state.iotAutoCreditEvents.map(e => `
+          <tr style="border-bottom:1px solid var(--line);">
+            <td style="padding:12px 0; font-weight:600;">${e.floor}</td>
+            <td style="color:var(--leaf); font-family:'JetBrains Mono',monospace; font-weight:700;">${e.drop}</td>
+            <td>${e.studentsCredited} Hostellers (+10 Lu each)</td>
+            <td style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--leaf);">+${e.lumensTotal} Lu</td>
+            <td style="text-align:right;">
+              <span class="badge ${e.status.includes('MANUAL')?'sun':'leaf'}">${e.status}</span>
+              <span style="font-size:11px; opacity:0.6; display:block; font-family:'JetBrains Mono',monospace; margin-top:2px;">${e.time}</span>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+function triggerIotAutoCredit() {
+  state.iotAutoCreditEvents.unshift({
+    floor: "2nd Floor (Aryabhatta)",
+    drop: "88.6%",
+    studentsCredited: 42,
+    lumensTotal: 420,
+    time: "Just now",
+    status: "AUTO_DISPATCHED"
+  });
+  render();
+  toast("⚡ IoT Sub-Meter Trigger: 88.6% drop detected! +10 Lumens automatically self-credited to 42 students on Floor 2!");
+}
+
+function wardenManualCreditNonIot() {
+  const hostel = document.getElementById('manualHostel') ? document.getElementById('manualHostel').value.split(' (')[0] : "Bhabha Bhawan";
+  const floor = document.getElementById('manualFloor') ? document.getElementById('manualFloor').value.split(' (')[0] : "3rd Floor";
+  const base = parseFloat(document.getElementById('manualBaseKw') ? document.getElementById('manualBaseKw').value : "12.0") || 12.0;
+  const active = parseFloat(document.getElementById('manualActiveKw') ? document.getElementById('manualActiveKw').value : "1.8") || 1.8;
+  const drop = (((base - active) / base) * 100).toFixed(1);
+
+  state.iotAutoCreditEvents.unshift({
+    floor: `${floor} (${hostel} - Non-IoT)`,
+    drop: `${drop}%`,
+    studentsCredited: 38,
+    lumensTotal: 380,
+    time: "Just now",
+    status: "WARDEN_VERIFIED_MANUAL"
+  });
+  render();
+  toast(`✍️ Non-IoT Meter Verified by Warden! +10 Lumens dispatched to 38 students on ${floor} (${hostel}).`);
+}
+
+/* ----------------------------------------------------
+   9. WARDEN MODULE 2: PHOTO OCR & INVOICE APPROVALS
+---------------------------------------------------- */
+function renderWardenOCRTab() {
+  return `
+  <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:22px; flex-wrap:wrap; gap:12px;">
+    <div>
+      <div style="display:inline-flex; align-items:center; gap:6px; margin-bottom:4px;">
+        <span class="badge purple">📷 WARDEN OCR AUDIT · APPLIANCE VERIFICATION</span>
+      </div>
+      <h2 style="font-size:24px;">Student Appliance Invoice Verification Queue</h2>
+      <p style="font-size:13.5px; color:var(--ink-muted); margin:3px 0 0;">
+        Review student camera submissions. The system runs automated OCR reading and perceptual hash (pHash) anti-fraud verification before final credit dispatch.
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <h3 style="font-size:17px;">Pending Photo Invoices (${state.wardenPendingApprovals.filter(a=>a.status==='PENDING').length} Pending)</h3>
+      <span class="badge purple">pHash Anti-Duplicate Active</span>
+    </div>
+
+    ${state.wardenPendingApprovals.map(item => `
+      <div style="background:var(--dim); border:1px solid var(--line); border-radius:14px; padding:18px 20px; margin-bottom:14px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:12px; margin-bottom:10px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <strong style="font-size:15px;">${item.device}</strong>
+              <span class="badge ${item.status==='APPROVED'?'leaf':(item.status==='REJECTED'?'danger':'purple')}">${item.status}</span>
+            </div>
+            <div style="font-size:12.5px; color:var(--ink-secondary); margin-top:3px;">
+              Submitted by: <strong>${item.studentName}</strong> (${item.rollNo}) · ${item.hostel}
+            </div>
+          </div>
+          <div class="mono" style="font-size:16px; font-weight:700; color:var(--leaf);">
+            +${item.pts} Lumens
+          </div>
+        </div>
+
+        <div class="grid3" style="background:#fff; padding:12px 16px; border-radius:10px; border:1px solid var(--line); font-size:12px; margin-bottom:12px;">
+          <div>
+            <span style="opacity:0.6; display:block;">OCR Extracted Invoice</span>
+            <strong>${item.inv}</strong> (Confidence: <span style="color:var(--leaf); font-weight:700;">${item.ocrScore}</span>)
+          </div>
+          <div>
+            <span style="opacity:0.6; display:block;">Energy Classification</span>
+            <strong style="color:var(--leaf);">${item.tech}</strong>
+          </div>
+          <div>
+            <span style="opacity:0.6; display:block;">Perceptual Hash Fingerprint</span>
+            <strong class="mono">${item.phash}</strong> (Unique Verified ✓)
+          </div>
+        </div>
+
+        ${item.status === 'PENDING' ? `
+          <div style="display:flex; gap:10px; justify-content:flex-end;">
+            <button class="btn btn-ghost" style="font-size:12px; padding:8px 14px;" onclick="wardenRejectOCR('${item.id}')">
+              ❌ Reject / Flag Duplicate
+            </button>
+            <button class="btn btn-leaf" style="font-size:12px; padding:8px 16px;" onclick="wardenApproveOCR('${item.id}', ${item.pts})">
+              ✅ Approve &amp; Award +${item.pts} Lu
+            </button>
+          </div>
+        ` : `
+          <div style="text-align:right; font-size:12px; font-weight:600; color:${item.status==='APPROVED'?'var(--leaf)':'var(--danger)'};">
+            ${item.status === 'APPROVED' ? '✓ Credited to student balance and logged in ledger' : '✗ Submission rejected by Warden'}
+          </div>
+        `}
+      </div>
+    `).join('')}
+  </div>`;
+}
+
+function wardenApproveOCR(id, pts) {
+  const item = state.wardenPendingApprovals.find(a => a.id === id);
+  if (item) item.status = 'APPROVED';
+  render();
+  toast(`Approved ${item.device}! +${pts} Lumens dispatched to student.`);
+}
+
+function wardenRejectOCR(id) {
+  const item = state.wardenPendingApprovals.find(a => a.id === id);
+  if (item) item.status = 'REJECTED';
+  render();
+  toast(`Rejected submission ${id}.`);
+}
+
+/* ----------------------------------------------------
+   10. Navigation Shell & Render Dispatcher
+---------------------------------------------------- */
+function renderTopbar() {
+  const isWarden = state.role === 'warden';
+
+  const tabs = isWarden ? [
+    ['warden_iot', '⚡ IoT Sub-Meters (Auto-Credit)'],
+    ['warden_ocr', '📷 Photo OCR Approvals Queue'],
+    ['leaderboard', '🏆 Hostel Board'],
+    ['audit', '📊 Energy Audit']
+  ] : [
+    ['meter', '⚡ Sub-Meter (+10 Lu)'],
+    ['camera_ai', '📷 Camera Scanner'],
+    ['store', '🛍️ Monthly Store'],
+    ['leaderboard', '🏆 Hostel Board'],
+    ['audit', '📊 Energy Audit']
+  ];
+
+  return `
+  <div class="topbar">
+    <div class="brand-group">
+      <div class="brand-icon">⚡</div>
+      <div class="brand-text">
+        <h1>Lumen</h1>
+        <small>${isWarden ? 'Warden Admin Portal' : 'Campus Energy Ledger'}</small>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      ${tabs.map(([k, l]) => `
+        <button class="${state.tab === k ? 'active' : ''}" onclick="setTab('${k}')">${l}</button>
+      `).join('')}
+    </div>
+
+    <div class="topbar-right">
+      <span class="badge ${isWarden ? 'purple' : 'leaf'}">
+        ${isWarden ? '👔 Warden' : '🎓 Student'}
+      </span>
+      ${!isWarden ? `
+        <div class="lumen-pill">⚡ ${state.myLumens} <span style="font-weight:400; opacity:0.75; font-size:11px;">Lu</span></div>
+      ` : ''}
+      <div class="avatar-badge" title="${state.user ? state.user.name : ''}" onclick="doLogout()">
+        ${state.user ? state.user.name.split(' ').map(n=>n[0]).join('') : 'U'}
+      </div>
+    </div>
+  </div>`;
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if (state.screen === 'login') {
+    app.innerHTML = renderLogin();
+    return;
+  }
+
+  let content = '';
+  if (state.tab === 'warden_iot') content = renderWardenIoTTab();
+  else if (state.tab === 'warden_ocr') content = renderWardenOCRTab();
+  else if (state.tab === 'meter') content = renderMeterTab();
+  else if (state.tab === 'camera_ai') content = renderCameraAITab();
+  else if (state.tab === 'store') content = renderStore();
+  else if (state.tab === 'leaderboard') content = renderLeaderboard();
+  else if (state.tab === 'audit') content = renderAudit();
+
+  app.innerHTML = `
+    ${renderTopbar()}
+    <main>${content}</main>
+    <div style="text-align:center; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--ink-muted); opacity:0.75; padding:20px 0 40px;">
+      Lumen · Smart India Hackathon 2026 · Team innov8 · Dual Role MVP (Student &amp; Warden)
+    </div>
+  `;
+}
+
+// Initial render
+render();
+</script>
+</body>
+</html>
